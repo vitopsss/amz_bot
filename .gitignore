@@ -1,0 +1,45 @@
+# Dependencies
+node_modules/
+
+# Local environment and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Browser profiles and authenticated sessions
+.playwright-amazon-profile/
+.playwright-tiktok-profile/
+playwright/.auth/
+storage-state*.json
+cookies*.json
+
+# Runtime state
+.bot-runtime.lock
+.discovery-state.json
+
+# Operational outputs and logs
+outputs/
+backups/
+*.log
+*.out.log
+*.err.log
+
+# Customer/order/product exports
+*.csv
+*.xls
+*.xlsx
+*.tsv
+
+# Local handoff notes with business-specific context
+NEXT_CHAT_CONTEXT.md
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
