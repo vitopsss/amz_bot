@@ -1,30 +1,32 @@
-# Amazon Automation Workspace
+# Automação de Marketplace (Amazon)
 
-Comece por `PROJECT_CONTEXT.md`. Ele separa cada parte do projeto, o que cada
-script faz, quais arquivos sao estado/saida e qual fluxo usar em cada caso.
+Conjunto de automações com **Playwright** que cobre o ciclo de escolha e cadastro de produtos num marketplace:
 
-## Fluxos principais
+1. **Descoberta**: busca produtos com sinal de demanda recente no TikTok (`scripts/search-tiktok-products.js`).
+2. **Mineração e validação** (`index.js`): navega na Amazon por keyword, ASIN ou vitrines, filtra faixa de preço, importados e marcas fortes, e testa no Seller Central se o ASIN pode ser vendido.
+3. **Margem**: calcula a margem com a taxa do marketplace e o custo operacional, e grava tudo em CSV.
+4. **SEO de cadastro**: gera título, bullets e palavras-chave para o produto escolhido (`scripts/build-amazon-asin-seo.js`).
+5. **Pedidos**: exporta pedidos enviados do Seller Central (`scripts/export-amazon-shipped-orders.js`).
 
-- Descoberta TikTok: `npm run tiktok:search`
-- Mineracao/validacao Amazon + Seller Central: `node index.js`
-- Exportacao de pedidos enviados: `npm run export:amazon-orders`
-- Pacote SEO/cadastro depois de escolher produto: `npm run seo:tiktok`
+Também guarda estado entre execuções (ASINs já vistos e bloqueios recorrentes) para não repetir trabalho, e pode rodar em loop intermitente.
 
-## Validacao rapida
+## Stack
 
-```powershell
-node --check index.js
-node --check scripts\search-tiktok-products.js
-node --check scripts\export-amazon-shipped-orders.js
-node --check scripts\build-amazon-asin-seo.js
+Node.js · Playwright · dotenv
+
+## Como rodar
+
+```bash
+npm install
+npx playwright install chromium
+# crie um .env com MIN_MARGIN, HEADLESS_MODE etc. (lista em PROJECT_CONTEXT.md)
+
+npm run tiktok:search          # descoberta
+node index.js                  # mineração + validação
+npm run seo:tiktok             # pacote de SEO
+npm run export:amazon-orders   # exportação de pedidos
 ```
 
-## Ordem recomendada para novos produtos
+O login no Seller Central usa um perfil persistente do navegador. Nenhuma credencial fica no código.
 
-1. Procurar produto no TikTok por frequencia recente.
-2. Usar os vencedores como termos de descoberta do `index.js`.
-3. Validar o ASIN no Seller Central.
-4. Procurar fornecedor/margem.
-5. Gerar SEO/cadastro so depois que o produto estiver escolhido.
-
-Nao ha repositorio Git inicializado neste workspace no momento.
+Detalhes de cada script, variáveis e arquivos de estado: [`PROJECT_CONTEXT.md`](PROJECT_CONTEXT.md).
